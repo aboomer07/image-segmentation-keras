@@ -84,6 +84,7 @@ def train(model,
           custom_augmentation=None,
           other_inputs_paths=None,
           preprocessing=None,
+          metrics=['accuracy'],
           read_image_type=1  # cv2.IMREAD_COLOR = 1 (rgb),
                              # cv2.IMREAD_GRAYSCALE = 0,
                              # cv2.IMREAD_UNCHANGED = -1 (4 channels like RGBA)
@@ -118,7 +119,7 @@ def train(model,
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
-                      metrics=['accuracy'])
+                      metrics=metrics)
 
     if checkpoints_path is not None:
         config_file = checkpoints_path + "_config.json"
