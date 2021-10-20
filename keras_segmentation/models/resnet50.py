@@ -2,7 +2,7 @@
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 import tensorflow as tf
-# from keras import layers
+from tensorflow.keras import layers
 
 # Source:
 # https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py

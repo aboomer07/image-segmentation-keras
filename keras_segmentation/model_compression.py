@@ -6,7 +6,7 @@ import numpy as np
 import six 
 import os 
 import json 
-import sys 
+import sys
 
 from .data_utils.data_loader import image_segmentation_generator
 from .train import CheckpointsCallback 
