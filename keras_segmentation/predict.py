@@ -155,8 +155,8 @@ def predict(model=None, inp=None, out_fname=None,
 
     x = get_image_array(inp, input_width, input_height,
                         ordering=IMAGE_ORDERING)
-    pr = model.predict(np.array([x]))[0]
-    pr = pr.reshape((output_height,  output_width, n_classes)).argmax(axis=2)
+    pr_init = model.predict(np.array([x]))[0]
+    pr = pr_init.reshape((output_height,  output_width, n_classes)).argmax(axis=2)
 
     seg_img = visualize_segmentation(pr, inp, n_classes=n_classes,
                                      colors=colors, overlay_img=overlay_img,
@@ -168,7 +168,7 @@ def predict(model=None, inp=None, out_fname=None,
     if out_fname is not None:
         cv2.imwrite(out_fname, seg_img)
 
-    return pr
+    return(pr_init, pr)
 
 
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
