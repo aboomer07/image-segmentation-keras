@@ -167,7 +167,7 @@ def predict(model=None, inp=None, out_fname=None,
                                      prediction_height=prediction_height)
 
     if out_fname is not None:
-        c2.imwrite(out_fname, seg_img)
+        cv2.imwrite(out_fname, seg_img)
 
     return(pr_init, pr)
 
