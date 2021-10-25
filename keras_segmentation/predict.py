@@ -144,7 +144,8 @@ def predict(model=None, inp=None, out_fname=None,
         "Input should be the CV image or the input file name"
 
     if isinstance(inp, six.string_types):
-        inp = imread(inp, read_image_type)
+        # inp = imread(inp, read_image_type)
+        inp = imread(inp)
 
     assert (len(inp.shape) == 3 or len(inp.shape) == 1 or len(inp.shape) == 4), "Image should be h,w,3 "
 
