@@ -167,6 +167,8 @@ def predict(model=None, inp=None, out_fname=None,
                                      prediction_width=prediction_width,
                                      prediction_height=prediction_height)
 
+    return(pr_init, pr, seg_img)
+
     if out_fname is not None:
         imsave(out_fname, seg_img)
 
