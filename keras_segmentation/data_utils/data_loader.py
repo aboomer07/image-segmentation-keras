@@ -4,7 +4,7 @@ import random
 import six
 import numpy as np
 import cv2
-from matplotlib.pyplot import imread, imsave, imshow
+# from matplotlib.pyplot import imread, imsave, imshow
 
 try:
     from collections.abc import Sequence
@@ -142,8 +142,8 @@ def get_image_array(image_input,
         if not os.path.isfile(image_input):
             raise DataLoaderError("get_image_array: path {0} doesn't exist"
                                   .format(image_input))
-        # img = cv2.imread(image_input, read_image_type)
-        img = imread(image_input)
+        img = cv2.imread(image_input, read_image_type)
+        # img = imread(image_input)
     else:
         raise DataLoaderError("get_image_array: Can't process input type {0}"
                               .format(str(type(image_input))))
@@ -184,8 +184,8 @@ def get_segmentation_array(image_input, nClasses,
         if not os.path.isfile(image_input):
             raise DataLoaderError("get_segmentation_array: "
                                   "path {0} doesn't exist".format(image_input))
-        # img = cv2.imread(image_input, read_image_type)
-        img = imread(image_input)
+        img = cv2.imread(image_input, read_image_type)
+        # img = imread(image_input)
     else:
         raise DataLoaderError("get_segmentation_array: "
                               "Can't process input type {0}"
@@ -215,10 +215,10 @@ def verify_segmentation_dataset(images_path, segs_path,
 
         return_value = True
         for im_fn, seg_fn in tqdm(img_seg_pairs):
-            # img = cv2.imread(im_fn)
-            # seg = cv2.imread(seg_fn)
-            img = imread(im_fn)
-            seg = imread(seg_fn)
+            img = cv2.imread(im_fn)
+            seg = cv2.imread(seg_fn)
+            # img = imread(im_fn)
+            # seg = imread(seg_fn)
             # Check dimensions match
             if not img.shape == seg.shape:
                 return_value = False
@@ -278,11 +278,11 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                     seg = None 
                 else:
                     im, seg = next(zipped)
-                    # seg = cv2.imread(seg, 1)
-                    seg = imread(seg)
+                    seg = cv2.imread(seg, 1)
+                    # seg = imread(seg)
 
-                # im = cv2.imread(im, read_image_type)
-                im = imread(im)
+                im = cv2.imread(im, read_image_type)
+                # im = imread(im)
 
                 if do_augment:
 
@@ -306,15 +306,15 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
 
                 im, seg, others = next(zipped)
 
-                # im = cv2.imread(im, read_image_type)
-                # seg = cv2.imread(seg, 1)
-                im = imread(im)
-                seg = imread(seg)
+                im = cv2.imread(im, read_image_type)
+                seg = cv2.imread(seg, 1)
+                # im = imread(im)
+                # seg = imread(seg)
 
                 oth = []
                 for f in others:
-                    # oth.append(cv2.imread(f, read_image_type))
-                    oth.append(imread(f))
+                    oth.append(cv2.imread(f, read_image_type))
+                    # oth.append(imread(f))
 
                 if do_augment:
                     if custom_augmentation is None:
