@@ -167,8 +167,6 @@ def predict(model=None, inp=None, out_fname=None,
                                      prediction_width=prediction_width,
                                      prediction_height=prediction_height)
 
-    return(pr_init, pr, seg_img)
-
     if out_fname is not None:
         if np.max(seg_img) > 1:
             seg_img = seg_img / 255
