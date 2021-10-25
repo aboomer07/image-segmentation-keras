@@ -4,6 +4,7 @@ import random
 
 import numpy as np
 import cv2
+from matplotlib.pyplot import imread, imsave, imshow
 
 from .augmentation import augment_seg, custom_augment_seg
 from .data_loader import \
@@ -48,8 +49,8 @@ def visualize_segmentation_dataset(images_path, segs_path, n_classes,
 
         print("Please press any key to display the next image")
         for im_fn, seg_fn in img_seg_pairs:
-            img = cv2.imread(im_fn)
-            seg = cv2.imread(seg_fn)
+            img = imread(im_fn)
+            seg = imread(seg_fn)
             print("Found the following classes in the segmentation image:",
                   np.unique(seg))
             img, seg_img = _get_colored_segmentation_image(
@@ -62,8 +63,8 @@ def visualize_segmentation_dataset(images_path, segs_path, n_classes,
                 seg_img = cv2.resize(seg_img, image_size)
 
             print("Please press any key to display the next image")
-            cv2.imshow("img", img)
-            cv2.imshow("seg_img", seg_img)
+            imshow("img", img)
+            imshow("seg_img", seg_img)
             cv2.waitKey()
     except DataLoaderError as e:
         print("Found error during data loading\n{0}".format(str(e)))
@@ -82,8 +83,8 @@ def visualize_segmentation_dataset_one(images_path, segs_path, n_classes,
 
     im_fn, seg_fn = random.choice(img_seg_pairs)
 
-    img = cv2.imread(im_fn)
-    seg = cv2.imread(seg_fn)
+    img = imread(im_fn)
+    seg = imread(seg_fn)
     print("Found the following classes "
           "in the segmentation image:", np.unique(seg))
 
@@ -92,8 +93,8 @@ def visualize_segmentation_dataset_one(images_path, segs_path, n_classes,
                                         n_classes, do_augment=do_augment)
 
     if not no_show:
-        cv2.imshow("img", img)
-        cv2.imshow("seg_img", seg_img)
+        imshow("img", img)
+        imshow("seg_img", seg_img)
         cv2.waitKey()
 
     return img, seg_img
