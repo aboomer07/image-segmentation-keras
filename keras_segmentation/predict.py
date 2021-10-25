@@ -5,7 +5,7 @@ import os
 import six
 
 import cv2
-from matplotlib.pyplot import imread, imsave, imshow
+# from matplotlib.pyplot import imread, imsave, imshow
 import numpy as np
 from tqdm import tqdm
 from time import time
@@ -144,7 +144,7 @@ def predict(model=None, inp=None, out_fname=None,
         "Input should be the CV image or the input file name"
 
     if isinstance(inp, six.string_types):
-        inp = imread(inp, read_image_type)
+        inp = cv2.imread(inp, read_image_type)
 
     assert (len(inp.shape) == 3 or len(inp.shape) == 1 or len(inp.shape) == 4), "Image should be h,w,3 "
 
@@ -167,7 +167,7 @@ def predict(model=None, inp=None, out_fname=None,
                                      prediction_height=prediction_height)
 
     if out_fname is not None:
-        imsave(out_fname, seg_img)
+        c2.imwrite(out_fname, seg_img)
 
     return(pr_init, pr)
 
@@ -256,7 +256,7 @@ def predict_video(model=None, inp=None, output=None,
         if output is not None:
             video.write(fused_img)
         if display:
-            imshow('Frame masked', fused_img)
+            cv2.imshow('Frame masked', fused_img)
             if cv2.waitKey(fps) & 0xFF == ord('q'):
                 break
     cap.release()
