@@ -134,9 +134,8 @@ def train(model,
             loss_k = masked_categorical_crossentropy
         else:
             loss_k = 'categorical_crossentropy'
-            loss_k = dice_loss()
 
-        model.compile(loss=loss_k,
+        model.compile(loss=dice_loss,
                       optimizer=optimizer_name,
                       metrics=metrics)
 
