@@ -11,7 +11,7 @@ import glob
 import sys
 from tensorflow.keras import backend as K
 
-def dice_coef(y_true, y_pred, smooth=1e-7):
+def dice_coef(y_true, y_pred):
     '''
     Dice coefficient for 10 categories. Ignores background pixel label 0
     Pass to model as metric during compile statement
@@ -20,7 +20,7 @@ def dice_coef(y_true, y_pred, smooth=1e-7):
     y_pred_f = K.flatten(y_pred[...,1:])
     intersect = K.sum(y_true_f * y_pred_f, axis=-1)
     denom = K.sum(y_true_f + y_pred_f, axis=-1)
-    return(K.mean((2. * intersect / (denom + smooth))))
+    return(K.mean((2. * intersect / (denom + 1e-7))))
 
 def dice_loss(y_true, y_pred):
     '''
@@ -134,7 +134,7 @@ def train(model,
             loss_k = masked_categorical_crossentropy
         else:
             loss_k = 'categorical_crossentropy'
-            loss_k = dice_loss
+            loss_k = dice_loss()
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
