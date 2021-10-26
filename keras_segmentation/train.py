@@ -9,6 +9,24 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 import tensorflow as tf
 import glob
 import sys
+from tensorflow.keras import backend as K
+
+def dice_coef(y_true, y_pred, smooth=1e-7):
+    '''
+    Dice coefficient for 10 categories. Ignores background pixel label 0
+    Pass to model as metric during compile statement
+    '''
+    y_true_f = K.flatten(K.one_hot(K.cast(y_true, 'int32'), num_classes=18)[...,1:])
+    y_pred_f = K.flatten(y_pred[...,1:])
+    intersect = K.sum(y_true_f * y_pred_f, axis=-1)
+    denom = K.sum(y_true_f + y_pred_f, axis=-1)
+    return(K.mean((2. * intersect / (denom + smooth))))
+
+def dice_loss(y_true, y_pred):
+    '''
+    Dice loss to minimize. Pass to model as loss during compile statement
+    '''
+    return(1 - dice_coef(y_true, y_pred))
 
 def find_latest_checkpoint(checkpoints_path, fail_safe=True):
 
@@ -116,6 +134,7 @@ def train(model,
             loss_k = masked_categorical_crossentropy
         else:
             loss_k = 'categorical_crossentropy'
+            loss_k = dice_loss
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
