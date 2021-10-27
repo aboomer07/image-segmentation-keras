@@ -133,15 +133,15 @@ def train(model,
     if optimizer_name is not None:
 
         if ignore_zero_class:
-            loss_k = masked_categorical_crossentropy
+          loss_k = masked_categorical_crossentropy
         else:
-            loss_k = 'categorical_crossentropy'
+          loss_k = 'categorical_crossentropy'
 
-    	if loss is not None:
-    		loss_k = loss
+        if loss is not None:
+          loss_k = loss
 
-    	if (optimizer_name == 'adam')&(lr is not None):
-    		optimizer_name = tf.keras.optimizers.Adam(lr=learning_rate)
+        if (optimizer_name == 'adam')&(lr is not None):
+          optimizer_name = tf.keras.optimizers.Adam(lr=learning_rate)
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
