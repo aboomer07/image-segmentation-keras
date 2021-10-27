@@ -141,7 +141,7 @@ def train(model,
           loss_k = loss
 
         if (optimizer_name == 'adam')&(lr is not None):
-          optimizer_name = tf.keras.optimizers.Adam(lr=learning_rate)
+          optimizer_name = tf.keras.optimizers.Adam(lr=lr)
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
