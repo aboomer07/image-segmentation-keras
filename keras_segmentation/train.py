@@ -103,6 +103,8 @@ def train(model,
           other_inputs_paths=None,
           preprocessing=None,
           metrics=['accuracy'],
+          loss=None,
+          lr=None,
           read_image_type=1  # cv2.IMREAD_COLOR = 1 (rgb),
                              # cv2.IMREAD_GRAYSCALE = 0,
                              # cv2.IMREAD_UNCHANGED = -1 (4 channels like RGBA)
@@ -134,6 +136,12 @@ def train(model,
             loss_k = masked_categorical_crossentropy
         else:
             loss_k = 'categorical_crossentropy'
+
+    	if loss is not None:
+    		loss_k = loss
+
+    	if (optimizer_name == 'adam')&(lr is not None):
+    		optimizer_name = tf.keras.optimizers.Adam(lr=learning_rate)
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
