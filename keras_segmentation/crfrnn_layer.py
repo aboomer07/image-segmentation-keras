@@ -27,9 +27,9 @@ import tensorflow as tf
 # from tensorflow.keras.engine.topology import Layer
 from tensorflow.keras.layers import Layer
 
-import high_dim_filter_loader
+from high_dim_filter_loader import custom_module
 
-custom_module = high_dim_filter_loader.custom_module
+# custom_module = high_dim_filter_loader.custom_module
 
 
 def _diagonal_initializer(shape, *ignored, **ignored_too):
