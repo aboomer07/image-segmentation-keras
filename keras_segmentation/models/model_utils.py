@@ -8,7 +8,7 @@ from tqdm import tqdm
 from .config import IMAGE_ORDERING
 from ..train import train
 from ..predict import predict, predict_multiple, evaluate
-# from ..crfrnn_layer import CrfRnnLayer
+from keras_crf import CRFModel
 
 
 # source m1 , dest m2
@@ -101,7 +101,7 @@ def get_segmentation_model(input, output, add_crf=False):
     # else:
     o = (Activation('softmax'))(o)
     if add_crf:
-        o = CRF(True)(o)
+        o = CRFModel(o)
     model = Model(img_input, o)
     model.output_width = output_width
     model.output_height = output_height

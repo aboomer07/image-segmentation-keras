@@ -65,21 +65,20 @@ class CrfRnnLayer(Layer):
     def build(self, input_shape):
         # Weights of the spatial kernel
         self.spatial_ker_weights = self.add_weight(name='spatial_ker_weights',
-                                                   shape=(self.num_classes, self.num_classes),
-                                                   initializer=_diagonal_initializer,
-                                                   trainable=True)
+            shape=(self.num_classes, self.num_classes),
+            initializer=_diagonal_initializer,
+            trainable=True)
 
         # Weights of the bilateral kernel
-        self.bilateral_ker_weights = self.add_weight(name='bilateral_ker_weights',
-                                                     shape=(self.num_classes, self.num_classes),
-                                                     initializer=_diagonal_initializer,
-                                                     trainable=True)
+        self.bilateral_ker_weights = self.add_weight(
+            name='bilateral_ker_weights', shape=(self.num_classes, self.num_classes), initializer=_diagonal_initializer,
+                trainable=True)
 
         # Compatibility matrix
         self.compatibility_matrix = self.add_weight(name='compatibility_matrix',
-                                                    shape=(self.num_classes, self.num_classes),
-                                                    initializer=_potts_model_initializer,
-                                                    trainable=True)
+            shape=(self.num_classes, self.num_classes),
+            initializer=_potts_model_initializer,
+            trainable=True)
 
         super(CrfRnnLayer, self).build(input_shape)
 
