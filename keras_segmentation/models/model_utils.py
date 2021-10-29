@@ -89,16 +89,16 @@ def get_segmentation_model(input, output, add_crf=False):
         n_classes = o_shape[3]
         o = (Reshape((output_height*output_width, -1)))(o)
 
-    if add_crf:
-        o = CRF(True)(o)
-        # o = CrfRnnLayer(image_dims=i_shape,
-        #     num_classes=18,
-        #     theta_alpha=160.,
-        #     theta_beta=3.,
-        #     theta_gamma=3.,
-        #     num_iterations=10,
-        #     name='crfrnn')([o, img_input])
-    else:
+    # if add_crf:
+    #     o = CRF(True)(o)
+    #     # o = CrfRnnLayer(image_dims=i_shape,
+    #     #     num_classes=18,
+    #     #     theta_alpha=160.,
+    #     #     theta_beta=3.,
+    #     #     theta_gamma=3.,
+    #     #     num_iterations=10,
+    #     #     name='crfrnn')([o, img_input])
+    # else:
     o = (Activation('softmax'))(o)
     if add_crf:
         o = CRF(True)(o)
