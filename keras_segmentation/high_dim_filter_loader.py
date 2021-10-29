@@ -25,8 +25,10 @@ SOFTWARE.
 import os
 import tensorflow as tf
 from tensorflow.python.framework import ops
+import urllib
 # custom_module = tf.load_op_library(os.path.join(os.path.dirname(__file__), 'cpp', 'high_dim_filter.so'))
-custom_module = tf.load_op_library('https://github.com/aboomer07/image-segmentation-keras/blob/master/keras_segmentation/cpp/high_dim_filter.so')
+urllib.request.urlretrieve('https://github.com/aboomer07/image-segmentation-keras/blob/master/keras_segmentation/cpp/high_dim_filter.so', "high_dim.so")
+custom_module = tf.load_op_library("high_dim.so")
 
 
 @ops.RegisterGradient('HighDimFilter')
