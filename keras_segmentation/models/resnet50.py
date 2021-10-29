@@ -30,7 +30,8 @@ def one_side_pad(x):
     return x
 
 
-def identity_block(input_tensor, kernel_size, filters, stage, block):
+def identity_block(input_tensor, kernel_size, filters, stage, 
+    block, conv_l1=False):
     """The identity block is the block that has no conv layer at shortcut.
     # Arguments
         input_tensor: input tensor
@@ -52,17 +53,31 @@ def identity_block(input_tensor, kernel_size, filters, stage, block):
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-    x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING,
+    if conv_l1:
+        x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING,
+               name=conv_name_base + '2a', 
+               kernel_regularizer='l1')(input_tensor)
+    else:
+        x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2a')(input_tensor)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2a')(x)
     x = Activation('relu')(x)
 
-    x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
+    if conv_l1:
+        x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
+               padding='same', name=conv_name_base + '2b',
+               kernel_regularizer='l1')(x)
+    else:
+        x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b')(x)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2b')(x)
     x = Activation('relu')(x)
 
-    x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+    if conv_l1:
+        x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+               name=conv_name_base + '2c', kernel_regularizer='l1')(x)
+    else:
+        x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2c')(x)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2c')(x)
 
@@ -72,7 +87,7 @@ def identity_block(input_tensor, kernel_size, filters, stage, block):
 
 
 def conv_block(input_tensor, kernel_size, filters, stage, block,
-               strides=(2, 2)):
+               strides=(2, 2), conv_l1=False):
     """conv_block is the block that has a conv layer at shortcut
     # Arguments
         input_tensor: input tensor
@@ -96,22 +111,41 @@ def conv_block(input_tensor, kernel_size, filters, stage, block,
     conv_name_base = 'res' + str(stage) + block + '_branch'
     bn_name_base = 'bn' + str(stage) + block + '_branch'
 
-    x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING, strides=strides,
-               name=conv_name_base + '2a')(input_tensor)
+    if conv_l1:
+        x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING, 
+            strides=strides, name=conv_name_base + '2a',
+            kernel_regularizer='l1')(input_tensor)
+    else:
+        x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING, 
+            strides=strides, name=conv_name_base + '2a')(input_tensor)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2a')(x)
     x = Activation('relu')(x)
 
-    x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
+    if conv_l1:
+        x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
+               padding='same', name=conv_name_base + '2b',
+               kernel_regularizer='l1')(x)
+    else:
+        x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b')(x)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2b')(x)
     x = Activation('relu')(x)
 
-    x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+    if conv_l1:
+        x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+               name=conv_name_base + '2c', kernel_regularizer='l1')(x)
+    else:
+        x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2c')(x)
     x = BatchNormalization(axis=bn_axis, name=bn_name_base + '2c')(x)
 
-    shortcut = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
-                      strides=strides, name=conv_name_base + '1')(input_tensor)
+    if conv_l1:
+        shortcut = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+            strides=strides, name=conv_name_base + '1',
+            kernel_regularizer='l1')(input_tensor)
+    else:
+        shortcut = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
+            strides=strides, name=conv_name_base + '1')(input_tensor)
     shortcut = BatchNormalization(
         axis=bn_axis, name=bn_name_base + '1')(shortcut)
 
@@ -125,7 +159,7 @@ def get_resnet50_encoder(input_height=224,  input_width=224,
                          include_top=True, weights='imagenet',
                          input_tensor=None, input_shape=None,
                          pooling=None,
-                         classes=1000, channels=3):
+                         classes=1000, channels=3, conv_l1=False):
 
     assert input_height % 32 == 0
     assert input_width % 32 == 0
@@ -141,36 +175,42 @@ def get_resnet50_encoder(input_height=224,  input_width=224,
         bn_axis = 1
 
     x = ZeroPadding2D((3, 3), data_format=IMAGE_ORDERING)(img_input)
-    x = Conv2D(64, (7, 7), data_format=IMAGE_ORDERING,
-               strides=(2, 2), name='conv1')(x)
+
+    if conv_l1:
+        x = Conv2D(64, (7, 7), data_format=IMAGE_ORDERING,
+           strides=(2, 2), name='conv1', kernel_regularizer='l1')(x)
+    else:
+        x = Conv2D(64, (7, 7), data_format=IMAGE_ORDERING,
+           strides=(2, 2), name='conv1')(x)
     f1 = x
 
     x = BatchNormalization(axis=bn_axis, name='bn_conv1')(x)
     x = Activation('relu')(x)
     x = MaxPooling2D((3, 3), data_format=IMAGE_ORDERING, strides=(2, 2))(x)
 
-    x = conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1))
-    x = identity_block(x, 3, [64, 64, 256], stage=2, block='b')
-    x = identity_block(x, 3, [64, 64, 256], stage=2, block='c')
+    x = conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1),
+        conv_l1=conv_l1)
+    x = identity_block(x, 3, [64, 64, 256], stage=2, block='b', conv_l1=conv_l1)
+    x = identity_block(x, 3, [64, 64, 256], stage=2, block='c', conv_l1=conv_l1)
     f2 = one_side_pad(x)
 
-    x = conv_block(x, 3, [128, 128, 512], stage=3, block='a')
-    x = identity_block(x, 3, [128, 128, 512], stage=3, block='b')
-    x = identity_block(x, 3, [128, 128, 512], stage=3, block='c')
-    x = identity_block(x, 3, [128, 128, 512], stage=3, block='d')
+    x = conv_block(x, 3, [128, 128, 512], stage=3, block='a', conv_l1=conv_l1)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='b', conv_l1=conv_l1)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='c', conv_l1=conv_l1)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='d', conv_l1=conv_l1)
     f3 = x
 
-    x = conv_block(x, 3, [256, 256, 1024], stage=4, block='a')
-    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='b')
-    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='c')
-    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='d')
-    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='e')
-    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='f')
+    x = conv_block(x, 3, [256, 256, 1024], stage=4, block='a', conv_l1=conv_l1)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='b', conv_l1=conv_l1)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='c', conv_l1=conv_l1)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='d', conv_l1=conv_l1)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='e', conv_l1=conv_l1)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='f', conv_l1=conv_l1)
     f4 = x
 
-    x = conv_block(x, 3, [512, 512, 2048], stage=5, block='a')
-    x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b')
-    x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c')
+    x = conv_block(x, 3, [512, 512, 2048], stage=5, block='a', conv_l1=conv_l1)
+    x = identity_block(x, 3, [512, 512, 2048], stage=5, block='b', conv_l1=conv_l1)
+    x = identity_block(x, 3, [512, 512, 2048], stage=5, block='c', conv_l1=conv_l1)
     f5 = x
 
     x = AveragePooling2D(

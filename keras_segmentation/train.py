@@ -11,23 +11,6 @@ import glob
 import sys
 from tensorflow.keras import backend as K
 
-def dice_coef(y_true, y_pred):
-    '''
-    Dice coefficient for 10 categories. Ignores background pixel label 0
-    Pass to model as metric during compile statement
-    '''
-    y_true_f = K.flatten(K.one_hot(K.cast(y_true, 'int32'), num_classes=18)[...,1:])
-    y_pred_f = K.flatten(y_pred[...,1:])
-    intersect = K.sum(y_true_f * y_pred_f, axis=-1)
-    denom = K.sum(y_true_f + y_pred_f, axis=-1)
-    return(K.mean((2. * intersect / (denom + 1e-7))))
-
-def dice_loss(y_true, y_pred):
-    '''
-    Dice loss to minimize. Pass to model as loss during compile statement
-    '''
-    return(1 - dice_coef(y_true, y_pred))
-
 def find_latest_checkpoint(checkpoints_path, fail_safe=True):
 
     # This is legacy code, there should always be a "checkpoint" file in your directory

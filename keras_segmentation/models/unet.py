@@ -1,5 +1,6 @@
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
+from tensorflow.keras import regularizers
 
 from .config import IMAGE_ORDERING
 from .model_utils import get_segmentation_model
@@ -13,7 +14,6 @@ if IMAGE_ORDERING == 'channels_first':
     MERGE_AXIS = 1
 elif IMAGE_ORDERING == 'channels_last':
     MERGE_AXIS = -1
-
 
 def unet_mini(n_classes, input_height=360, input_width=480, channels=3):
 
@@ -67,7 +67,7 @@ def unet_mini(n_classes, input_height=360, input_width=480, channels=3):
 
 
 def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
-          input_width=608, channels=3):
+          input_width=608, channels=3, conv_l1=False):
 
     img_input, levels = encoder(
         input_height=input_height, input_width=input_width, channels=channels)
@@ -76,19 +76,34 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
     o = f4
 
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
-    o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
+
+    if conv_l1:
+      o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer='l1'))(o)
+    else:
+      o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
+
     o = (BatchNormalization())(o)
 
     o = (UpSampling2D((2, 2), data_format=IMAGE_ORDERING))(o)
     o = (concatenate([o, f3], axis=MERGE_AXIS))
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
-    o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING))(o)
+
+    if conv_l1:
+      o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer='l1'))(o)
+    else:
+      o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING))(o)
+
     o = (BatchNormalization())(o)
 
     o = (UpSampling2D((2, 2), data_format=IMAGE_ORDERING))(o)
     o = (concatenate([o, f2], axis=MERGE_AXIS))
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
-    o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
+
+    if conv_l1:
+      o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer='l1'))(o)
+    else:
+      o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
+
     o = (BatchNormalization())(o)
 
     o = (UpSampling2D((2, 2), data_format=IMAGE_ORDERING))(o)
@@ -97,10 +112,18 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
         o = (concatenate([o, f1], axis=MERGE_AXIS))
 
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
-    o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats"))(o)
+
+    if conv_l1:
+      o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats", kernel_regularizer='l1'))(o)
+    else:
+      o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats"))(o)
     o = (BatchNormalization())(o)
 
-    o = Conv2D(n_classes, (3, 3), padding='same',
+    if conv_l1:
+      o = Conv2D(n_classes, (3, 3), padding='same',
+               data_format=IMAGE_ORDERING, kernel_regularizer='l1')(o)
+    else:
+      o = Conv2D(n_classes, (3, 3), padding='same',
                data_format=IMAGE_ORDERING)(o)
 
     model = get_segmentation_model(img_input, o)
@@ -125,10 +148,10 @@ def vgg_unet(n_classes, input_height=416, input_width=608, encoder_level=3, chan
 
 
 def resnet50_unet(n_classes, input_height=416, input_width=608,
-                  encoder_level=3, channels=3):
+                  encoder_level=3, channels=3, conv_l1=False):
 
-    model = _unet(n_classes, get_resnet50_encoder,
-                  input_height=input_height, input_width=input_width, channels=channels)
+    model = _unet(n_classes, get_resnet50_encoder(conv_l1=conv_l1),
+                  input_height=input_height, input_width=input_width, channels=channels, conv_l1=conv_l1)
     model.model_name = "resnet50_unet"
     return model
 
