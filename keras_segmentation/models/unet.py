@@ -70,7 +70,8 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
           input_width=608, channels=3, conv_l1=False):
 
     img_input, levels = encoder(
-        input_height=input_height, input_width=input_width, channels=channels)
+        input_height=input_height, input_width=input_width, channels=channels,
+        conv_l1=conv_l1)
     [f1, f2, f3, f4, f5] = levels
 
     o = f4
@@ -150,7 +151,7 @@ def vgg_unet(n_classes, input_height=416, input_width=608, encoder_level=3, chan
 def resnet50_unet(n_classes, input_height=416, input_width=608,
                   encoder_level=3, channels=3, conv_l1=False):
 
-    model = _unet(n_classes, get_resnet50_encoder(conv_l1=conv_l1),
+    model = _unet(n_classes, get_resnet50_encoder,
                   input_height=input_height, input_width=input_width, channels=channels, conv_l1=conv_l1)
     model.model_name = "resnet50_unet"
     return model
