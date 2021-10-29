@@ -26,8 +26,9 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops import gradient_checker
 from tensorflow.python.framework import constant_op
-import high_dim_filter_loader
-custom_module = high_dim_filter_loader.custom_module
+# import high_dim_filter_loader
+from high_dim_filter_loader import custom_module
+# custom_module = high_dim_filter_loader.custom_module
 
 
 class HighDimGradTest(tf.test.TestCase):
