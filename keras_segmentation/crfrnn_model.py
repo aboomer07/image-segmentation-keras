@@ -25,7 +25,7 @@ SOFTWARE.
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D,
     Dropout, Conv2DTranspose, Cropping2D, Add
-from crfrnn_layer import CrfRnnLayer
+from .crfrnn_layer import CrfRnnLayer
 
 
 def get_crfrnn_model_def():

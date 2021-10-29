@@ -27,7 +27,7 @@ import tensorflow as tf
 # from tensorflow.keras.engine.topology import Layer
 from tensorflow.keras.layers import Layer
 
-from high_dim_filter_loader import custom_module
+from .high_dim_filter_loader import custom_module
 
 # custom_module = high_dim_filter_loader.custom_module
 
