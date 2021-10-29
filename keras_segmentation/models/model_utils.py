@@ -120,11 +120,11 @@ class CRF(Layer):
     CRF层本质上是一个带训练参数的loss计算层，因此CRF层只用来训练模型，
     而预测则需要另外建立模型。
     """
-    def __init__(self, ignore_last_label=False, **kwargs):
+    def __init__(self, ignore_last_label=False):
         """ignore_last_label：定义要不要忽略最后一个标签，起到mask的效果
         """
         self.ignore_last_label = 1 if ignore_last_label else 0
-        super(CRF, self).__init__(**kwargs)
+        # super(CRF, self).__init__(**kwargs)
 
     def build(self, input_shape):
         self.num_labels = input_shape[-1] - self.ignore_last_label
