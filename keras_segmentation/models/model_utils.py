@@ -99,7 +99,9 @@ def get_segmentation_model(input, output, add_crf=False):
         #     num_iterations=10,
         #     name='crfrnn')([o, img_input])
     else:
-        o = (Activation('softmax'))(o)
+    o = (Activation('softmax'))(o)
+    if add_crf:
+        o = CRF(True)(o)
     model = Model(img_input, o)
     model.output_width = output_width
     model.output_height = output_height
