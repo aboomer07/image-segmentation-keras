@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from keras.models import Model
-from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D, \
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D,
     Dropout, Conv2DTranspose, Cropping2D, Add
 from crfrnn_layer import CrfRnnLayer
 
