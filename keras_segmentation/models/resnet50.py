@@ -3,6 +3,7 @@ from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 import tensorflow as tf
 from tensorflow.keras import layers
+from tensorflow.keras import regularizers
 
 # Source:
 # https://github.com/fchollet/deep-learning-models/blob/master/resnet50.py

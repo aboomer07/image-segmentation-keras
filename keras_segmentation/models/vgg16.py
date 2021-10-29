@@ -2,7 +2,6 @@
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 import tensorflow as tf
-from tensorflow.keras.regularizers import 
 
 from .config import IMAGE_ORDERING
 
