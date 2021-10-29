@@ -8,7 +8,7 @@ from tqdm import tqdm
 from .config import IMAGE_ORDERING
 from ..train import train
 from ..predict import predict, predict_multiple, evaluate
-import crf.crfrnn_layer as crf
+from ..crfrnn_layer import CrfRnnLayer
 
 
 # source m1 , dest m2
@@ -90,7 +90,7 @@ def get_segmentation_model(input, output, add_crf=False):
         o = (Reshape((output_height*output_width, -1)))(o)
 
     if add_crf:
-        o = crf.CrfRnnLayer(image_dims=i_shape,
+        o = CrfRnnLayer(image_dims=i_shape,
             num_classes=18,
             theta_alpha=160.,
             theta_beta=3.,
