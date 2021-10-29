@@ -57,7 +57,7 @@ def identity_block(input_tensor, kernel_size, filters, stage,
     if conv_l1:
         x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2a', 
-               kernel_regularizer='l1')(input_tensor)
+               kernel_regularizer=regularizers.l1(0.0001))(input_tensor)
     else:
         x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2a')(input_tensor)
@@ -67,7 +67,7 @@ def identity_block(input_tensor, kernel_size, filters, stage,
     if conv_l1:
         x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b',
-               kernel_regularizer='l1')(x)
+               kernel_regularizer=regularizers.l1(0.0001))(x)
     else:
         x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b')(x)
@@ -76,7 +76,7 @@ def identity_block(input_tensor, kernel_size, filters, stage,
 
     if conv_l1:
         x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
-               name=conv_name_base + '2c', kernel_regularizer='l1')(x)
+               name=conv_name_base + '2c', kernel_regularizer=regularizers.l1(0.0001))(x)
     else:
         x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2c')(x)
@@ -115,7 +115,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block,
     if conv_l1:
         x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING, 
             strides=strides, name=conv_name_base + '2a',
-            kernel_regularizer='l1')(input_tensor)
+            kernel_regularizer=regularizers.l1(0.0001))(input_tensor)
     else:
         x = Conv2D(filters1, (1, 1), data_format=IMAGE_ORDERING, 
             strides=strides, name=conv_name_base + '2a')(input_tensor)
@@ -125,7 +125,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block,
     if conv_l1:
         x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b',
-               kernel_regularizer='l1')(x)
+               kernel_regularizer=regularizers.l1(0.0001))(x)
     else:
         x = Conv2D(filters2, kernel_size, data_format=IMAGE_ORDERING,
                padding='same', name=conv_name_base + '2b')(x)
@@ -134,7 +134,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block,
 
     if conv_l1:
         x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
-               name=conv_name_base + '2c', kernel_regularizer='l1')(x)
+               name=conv_name_base + '2c', kernel_regularizer=regularizers.l1(0.0001))(x)
     else:
         x = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
                name=conv_name_base + '2c')(x)
@@ -143,7 +143,7 @@ def conv_block(input_tensor, kernel_size, filters, stage, block,
     if conv_l1:
         shortcut = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
             strides=strides, name=conv_name_base + '1',
-            kernel_regularizer='l1')(input_tensor)
+            kernel_regularizer=regularizers.l1(0.0001))(input_tensor)
     else:
         shortcut = Conv2D(filters3, (1, 1), data_format=IMAGE_ORDERING,
             strides=strides, name=conv_name_base + '1')(input_tensor)
@@ -179,7 +179,7 @@ def get_resnet50_encoder(input_height=224,  input_width=224,
 
     if conv_l1:
         x = Conv2D(64, (7, 7), data_format=IMAGE_ORDERING,
-           strides=(2, 2), name='conv1', kernel_regularizer='l1')(x)
+           strides=(2, 2), name='conv1', kernel_regularizer=regularizers.l1(0.0001))(x)
     else:
         x = Conv2D(64, (7, 7), data_format=IMAGE_ORDERING,
            strides=(2, 2), name='conv1')(x)
