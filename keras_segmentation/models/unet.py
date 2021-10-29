@@ -67,7 +67,7 @@ def unet_mini(n_classes, input_height=360, input_width=480, channels=3):
 
 
 def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
-          input_width=608, channels=3, conv_l1=False):
+          input_width=608, channels=3, conv_l1=False, add_crf=False):
 
     img_input, levels = encoder(
         input_height=input_height, input_width=input_width, channels=channels,
@@ -127,7 +127,7 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
       o = Conv2D(n_classes, (3, 3), padding='same',
                data_format=IMAGE_ORDERING)(o)
 
-    model = get_segmentation_model(img_input, o)
+    model = get_segmentation_model(img_input, o, add_crf=add_crf)
 
     return model
 
@@ -149,10 +149,10 @@ def vgg_unet(n_classes, input_height=416, input_width=608, encoder_level=3, chan
 
 
 def resnet50_unet(n_classes, input_height=416, input_width=608,
-                  encoder_level=3, channels=3, conv_l1=False):
+                  encoder_level=3, channels=3, conv_l1=False, add_crf=False):
 
     model = _unet(n_classes, get_resnet50_encoder,
-                  input_height=input_height, input_width=input_width, channels=channels, conv_l1=conv_l1)
+                  input_height=input_height, input_width=input_width, channels=channels, conv_l1=conv_l1, add_crf=add_crf)
     model.model_name = "resnet50_unet"
     return model
 
