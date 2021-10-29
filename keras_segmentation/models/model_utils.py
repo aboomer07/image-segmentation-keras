@@ -8,7 +8,7 @@ from tqdm import tqdm
 from .config import IMAGE_ORDERING
 from ..train import train
 from ..predict import predict, predict_multiple, evaluate
-from ..crf import crfrnn_layer as crf
+import crf.crfrnn_layer as crf
 
 
 # source m1 , dest m2
