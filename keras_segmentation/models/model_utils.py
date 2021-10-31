@@ -93,7 +93,7 @@ def get_segmentation_model(input, output, add_crf=False):
     o = (Activation('softmax'))(o)
     if add_crf:
         o = CRF(n_classes)(o)
-        o = Lambda(lambda x: K.cast(x, np.float64), name='change_to_float')(o)
+        o = Lambda(lambda x: K.cast(x, 'float64'), name='change_to_float')(o)
     model = Model(img_input, o)
     model.output_width = output_width
     model.output_height = output_height
