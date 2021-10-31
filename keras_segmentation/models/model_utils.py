@@ -93,8 +93,7 @@ def get_segmentation_model(input, output, add_crf=False):
     o = (Activation('softmax'))(o)
     if add_crf:
         # o = CRF(n_classes, sparse_target=True)(o)
-        o = CRF(n_classes, units=tf.float64)(o)
-        # o = Lambda(lambda x: tf.cast(tf.cast(x, tf.float32), tf.float64), name='change_to_float')(o)
+        o = CRF(n_classes)(o)
     model = Model(img_input, o)
     model.output_width = output_width
     model.output_height = output_height
