@@ -9,7 +9,6 @@ from tqdm import tqdm
 from .config import IMAGE_ORDERING
 from ..train import train
 from ..predict import predict, predict_multiple, evaluate
-from tensorflow_addons.layers import CRF
 
 
 # source m1 , dest m2
@@ -91,9 +90,8 @@ def get_segmentation_model(input, output, add_crf=False):
         o = (Reshape((output_height*output_width, -1)))(o)
 
     o = (Activation('softmax'))(o)
-    if add_crf:
-        # o = CRF(n_classes, sparse_target=True)(o)
-        o = CRF(n_classes)(o)
+    # if add_crf:
+    #     o = CRF(n_classes)(o)
     model = Model(img_input, o)
     model.output_width = output_width
     model.output_height = output_height
