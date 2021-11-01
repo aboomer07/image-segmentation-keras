@@ -108,3 +108,11 @@ def get_segmentation_model(input, output, add_crf=False):
     model.evaluate_segmentation = MethodType(evaluate, model)
 
     return model
+
+def jaccard_distance(y_true, y_pred, smooth=100):
+  y_pred = tf.cast(y_pred, tf.float32)
+  print(y_pred.shape)
+  intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
+  sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
+  jac = (intersection + smooth) / (sum_ - intersection + smooth)
+  return (1 - jac) * smooth
