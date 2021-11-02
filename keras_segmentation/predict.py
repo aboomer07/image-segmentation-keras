@@ -5,7 +5,6 @@ import os
 import six
 
 import cv2
-# from matplotlib.pyplot import imread, imsave, imshow
 import numpy as np
 from tqdm import tqdm
 from time import time
@@ -14,9 +13,6 @@ from .train import find_latest_checkpoint
 from .data_utils.data_loader import get_image_array, get_segmentation_array,\
     DATA_LOADER_SEED, class_colors, get_pairs_from_paths
 from .models.config import IMAGE_ORDERING
-from crf.crf.densecrf import DenseCRF
-from crf.crf.params import DenseCRFParams
-from crf.crf import util
 
 
 random.seed(DATA_LOADER_SEED)
@@ -137,7 +133,7 @@ def predict(model=None, inp=None, out_fname=None,
             checkpoints_path=None, overlay_img=False,
             class_names=None, show_legends=False, colors=class_colors,
             prediction_width=None, prediction_height=None,
-            read_image_type=1):
+            read_image_type=1, add_crf=False):
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -161,9 +157,6 @@ def predict(model=None, inp=None, out_fname=None,
     x = get_image_array(inp, input_width, input_height,
                         ordering=IMAGE_ORDERING)
     pr_init = model.predict(np.array([x]))[0]
-    if add_crf:
-        crf = DenseCRF(inp, params=DenseCRFParams())
-        after_crf = crf.infer(pr_init, 5)
     pr = pr_init.reshape((output_height,  output_width, n_classes)).argmax(axis=2)
 
     seg_img = visualize_segmentation(pr, inp, n_classes=n_classes,
@@ -176,10 +169,7 @@ def predict(model=None, inp=None, out_fname=None,
     if out_fname is not None:
         cv2.imwrite(out_fname, seg_img)
 
-    if add_crf:
-        return(pr_init, pr, after_crf)
-    else:
-        return(pr_init, pr)
+    return(pr)
 
 
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
@@ -328,3 +318,8 @@ def evaluate(model=None, inp_images=None, annotations=None,
         "mean_IU": mean_IU,
         "class_wise_IU": cl_wise_score
     }
+
+
+
+
+

@@ -1,6 +1,8 @@
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 from tensorflow.keras import regularizers
+import tensorflow as tf
+tf.config.run_functions_eagerly(True)
 
 from .config import IMAGE_ORDERING
 from .model_utils import get_segmentation_model

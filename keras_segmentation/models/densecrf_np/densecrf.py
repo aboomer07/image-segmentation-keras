@@ -22,9 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
-from densecrf_np.params import DenseCRFParams
-from densecrf_np.util import softmax
+from .pairwise import SpatialPairwise, BilateralPairwise
+from .params import DenseCRFParams
+from .util import softmax
 
 
 class DenseCRF(object):

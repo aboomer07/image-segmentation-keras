@@ -26,7 +26,11 @@ from enum import Enum
 
 import numpy as np
 
-from densecrf_np.py_permutohedral import PyPermutohedral
+from .py_permutohedral import PyPermutohedral
+# from tensorflow.python.ops.numpy_ops import np_config
+# np_config.enable_numpy_behavior()
+import tensorflow as tf
+tf.config.run_functions_eagerly(True)
 
 
 class NormType(Enum):
@@ -47,10 +51,14 @@ class SpatialPairwise(Pairwise):
     def __init__(self, image, sx, sy, norm_type=NormType.NORMALIZE_SYMMETRIC):
         h, w, _ = image.shape
         x = np.arange(w, dtype=np.float32)
-        xx = np.tile(x, [h, 1]) / sx
+        xx = np.tile(x, [h, 1]) 
+        # xx = tf.convert_to_tensor(xx)
+        xx = xx / sx
 
         y = np.arange(h, dtype=np.float32).reshape((-1, 1))
-        yy = np.tile(y, [1, w]) / sy
+        yy = np.tile(y, [1, w]) 
+        # yy = tf.convert_to_tensor(yy)
+        yy = yy / sy
 
         self.features = np.stack([xx, yy], axis=2)
         self.lattice = PyPermutohedral()
@@ -84,7 +92,7 @@ class BilateralPairwise(Pairwise):
         rgb = (image / [sr, sg, sb]).astype(np.float32)
 
         xy = np.stack([xx, yy], axis=2)
-        self.features = np.concatenate([xy, rgb], axis=2)
+        self.features = np.concat([xy, rgb], axis=2)
 
         self.lattice = PyPermutohedral()
         self.lattice.init(self.features, num_dimensions=5, num_points=h * w)
@@ -95,7 +103,7 @@ class BilateralPairwise(Pairwise):
 
         assert norm_type == NormType.NORMALIZE_SYMMETRIC
 
-        self.norm = 1.0 / np.sqrt(self.norm + 1e-20)
+        self.norm = 1.0 / np.math.sqrt(self.norm + 1e-20)
 
     def apply(self, input_):
         input_ = input_ * self.norm
