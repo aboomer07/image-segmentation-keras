@@ -6,8 +6,8 @@ import tensorflow.keras.backend as K
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
-from .densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
-from .densecrf_np.util import softmax
+# from .densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
+# from .densecrf_np.util import softmax
 
 from .config import IMAGE_ORDERING
 from ..train import train
@@ -121,45 +121,44 @@ def jaccard_distance(y_true, y_pred, smooth=100):
   jac = (intersection + smooth) / (sum_ - intersection + smooth)
   return (1 - jac) * smooth
 
-class CRFLayer(Layer):
-    def __init__(self, num_iterations=5):
-        super(CRFLayer, self).__init__()
+# class CRFLayer(Layer):
+#     def __init__(self, num_iterations=5):
+#         super(CRFLayer, self).__init__()
 
-        self.alpha = 80
-        self.beta = 13
-        self.gamma = 3
-        self.spatial_ker_weight = 3
-        self.bilateral_ker_weight = 10
+#         self.alpha = 80
+#         self.beta = 13
+#         self.gamma = 3
+#         self.spatial_ker_weight = 3
+#         self.bilateral_ker_weight = 10
+#         self.iterations = num_iterations
 
+#     def call(self, inputs):
+#         def get_q(inp1, inp2):
+#             unaries = inp1[0, :, :].numpy()
+#             mod_shape = unaries.shape
+#             rgb = inp2[0, :, :, :].numpy()
 
-        self.iterations = num_iterations
+#             unaries = np.resize(unaries, rgb.shape)
 
-    def call(self, inputs):
-        def get_q(inp1, inp2):
-            unaries = inp1[0, :, :].numpy()
-            mod_shape = unaries.shape
-            rgb = inp2[0, :, :, :].numpy()
+#             self.sp = SpatialPairwise(rgb, self.gamma, self.gamma)
+#             self.bp = BilateralPairwise(rgb, self.alpha, self.alpha, 
+#                 self.beta, self.beta, self.beta)
 
-            unaries = np.resize(unaries, rgb.shape)
+#             q = softmax(unaries)
 
-            self.sp = SpatialPairwise(rgb, self.gamma, self.gamma)
-            self.bp = BilateralPairwise(rgb, self.alpha, self.alpha, 
-                self.beta, self.beta, self.beta)
+#             for _ in range(self.iterations):
+#                 tmp1 = unaries
+#                 output = self.sp.apply(q)
+#                 tmp1 = tmp1 + self.spatial_weight * output
 
-            q = softmax(unaries)
+#                 output = self.bp.apply(q)
+#                 tmp1 = tmp1 + self.bilateral_weight * output
 
-            for _ in range(self.iterations):
-                tmp1 = unaries
-                output = self.sp.apply(q)
-                tmp1 = tmp1 + self.spatial_weight * output
+#                 q = softmax(tmp1)
 
-                output = self.bp.apply(q)
-                tmp1 = tmp1 + self.bilateral_weight * output
-
-                q = softmax(tmp1)
-
-            q = np.resize(q, mod_shape)
-            return(q)
-
-        q = tf.py_function(get_q, inp=[inp1, inp2], Tout=tf.float32)
-        return(q)
+#             q = np.resize(q, mod_shape)
+#             return(q)
+#         inp1, inp2 = inputs[0], inputs[1]
+#         q = tf.py_function(get_q, inp=[inp1, inp2], Tout=tf.float32)
+#         q.set_shape(inp1.shape)
+#         return(q)
