@@ -5,10 +5,11 @@ import numpy as np
 import tensorflow as tf
 
 class CRFLayer(Layer):
-	tf.compat.v1.enable_eager_execution()
 	def __init__(self, num_iterations=5):
 		super(CRFLayer, self).__init__()
 
+		print('Inside CRF Init')
+		print(tf.executing_eagerly())
 		self.alpha = 80
 		self.beta = 13
 		self.gamma = 3
@@ -19,6 +20,7 @@ class CRFLayer(Layer):
 		self.iterations = num_iterations
 
 	def call(self, inputs):
+		print('Inside CRF Call')
 		print(tf.executing_eagerly())
 		unaries = inputs[0][0, :, :]
 		unaries = unaries.numpy()
@@ -35,7 +37,7 @@ class CRFLayer(Layer):
 
 		for _ in range(self.iterations):
 			tmp1 = inputs
-
+			print('here')
 			output = self.sp.apply(q)
 			tmp1 = tmp1 + self.spatial_weight * output
 

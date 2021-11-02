@@ -162,7 +162,6 @@ def get_resnet50_encoder(input_height=224,  input_width=224,
                          input_tensor=None, input_shape=None,
                          pooling=None,
                          classes=1000, channels=3, conv_l1=False):
-
     assert input_height % 32 == 0
     assert input_width % 32 == 0
 

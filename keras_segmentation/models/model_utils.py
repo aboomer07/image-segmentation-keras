@@ -5,6 +5,9 @@ from tensorflow.keras.layers import *
 import tensorflow.keras.backend as K
 import tensorflow as tf
 from tqdm import tqdm
+import numpy as np
+from .densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
+from .densecrf_np.util import softmax
 
 from .config import IMAGE_ORDERING
 from ..train import train
@@ -90,10 +93,10 @@ def get_segmentation_model(input, output, add_crf=False):
         n_classes = o_shape[3]
         o = (Reshape((output_height*output_width, -1)))(o)
 
-    # if add_crf:
-    #     o = CRFLayer()([o, img_input])
-    # else:
-    o = (Activation('softmax'))(o)
+    if add_crf:
+        o = CRFLayer()([o, img_input])
+    else:
+        o = (Activation('softmax'))(o)
 
     model = Model(img_input, o)
     model.output_width = output_width
@@ -118,4 +121,45 @@ def jaccard_distance(y_true, y_pred, smooth=100):
   jac = (intersection + smooth) / (sum_ - intersection + smooth)
   return (1 - jac) * smooth
 
+class CRFLayer(Layer):
+    def __init__(self, num_iterations=5):
+        super(CRFLayer, self).__init__()
 
+        self.alpha = 80
+        self.beta = 13
+        self.gamma = 3
+        self.spatial_ker_weight = 3
+        self.bilateral_ker_weight = 10
+
+
+        self.iterations = num_iterations
+
+    def call(self, inputs):
+        def get_q(inp1, inp2):
+            unaries = inp1[0, :, :].numpy()
+            mod_shape = unaries.shape
+            rgb = inp2[0, :, :, :].numpy()
+
+            unaries = np.resize(unaries, rgb.shape)
+
+            self.sp = SpatialPairwise(rgb, self.gamma, self.gamma)
+            self.bp = BilateralPairwise(rgb, self.alpha, self.alpha, 
+                self.beta, self.beta, self.beta)
+
+            q = softmax(unaries)
+
+            for _ in range(self.iterations):
+                tmp1 = unaries
+                output = self.sp.apply(q)
+                tmp1 = tmp1 + self.spatial_weight * output
+
+                output = self.bp.apply(q)
+                tmp1 = tmp1 + self.bilateral_weight * output
+
+                q = softmax(tmp1)
+
+            q = np.resize(q, mod_shape)
+            return(q)
+
+        q = tf.py_function(get_q, inp=[inp1, inp2], Tout=tf.float32)
+        return(q)

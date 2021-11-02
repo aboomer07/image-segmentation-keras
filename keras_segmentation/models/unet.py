@@ -2,7 +2,6 @@ from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 from tensorflow.keras import regularizers
 import tensorflow as tf
-tf.config.run_functions_eagerly(True)
 
 from .config import IMAGE_ORDERING
 from .model_utils import get_segmentation_model
@@ -70,7 +69,7 @@ def unet_mini(n_classes, input_height=360, input_width=480, channels=3):
 
 def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
           input_width=608, channels=3, conv_l1=False, add_crf=False):
-
+    
     img_input, levels = encoder(
         input_height=input_height, input_width=input_width, channels=channels,
         conv_l1=conv_l1)
@@ -135,7 +134,6 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
 
 
 def unet(n_classes, input_height=416, input_width=608, encoder_level=3, channels=3):
-
     model = _unet(n_classes, vanilla_encoder,
                   input_height=input_height, input_width=input_width, channels=channels)
     model.model_name = "unet"

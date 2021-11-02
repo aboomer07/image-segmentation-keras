@@ -30,7 +30,6 @@ from .py_permutohedral import PyPermutohedral
 # from tensorflow.python.ops.numpy_ops import np_config
 # np_config.enable_numpy_behavior()
 import tensorflow as tf
-tf.config.run_functions_eagerly(True)
 
 
 class NormType(Enum):
