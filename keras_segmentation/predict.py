@@ -158,14 +158,14 @@ def predict(model=None, inp=None, out_fname=None,
     x = get_image_array(inp, input_width, input_height,
                         ordering=IMAGE_ORDERING)
 
-    if add_crf:
-        pr = model.predict(np.array([x]))[0]
-        crf = DenseCRF(inp)
-        pr = crf.infer(pr)
-        pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
-    else:
-        pr = model.predict(np.array([x]))[0]
-        pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
+    # if add_crf:
+    #     pr = model.predict(np.array([x]))[0]
+    #     crf = DenseCRF(inp)
+    #     pr = crf.infer(pr)
+    #     pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
+    # else:
+    pr = model.predict(np.array([x]))[0]
+    pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
 
     seg_img = visualize_segmentation(pr, inp, n_classes=n_classes,
                                      colors=colors, overlay_img=overlay_img,
