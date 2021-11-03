@@ -103,22 +103,22 @@ def get_segmentation_model(input, output, add_crf=False):
     model.predict_multiple = MethodType(predict_multiple, model)
     model.evaluate_segmentation = MethodType(evaluate, model)
 
-    # if add_crf:
-    #     logits_out = model.get_layer([layer.name for layer in model.layers][-2]).output
-    #     logits = Model(inputs=model.input, outputs=logits_out)
-    #     logits.output_width = output_width
-    #     logits.output_height = output_height
-    #     logits.n_classes = n_classes
-    #     logits.input_height = input_height
-    #     logits.input_width = input_width
-    #     logits.model_name = ""
+    if add_crf:
+        logits_out = model.get_layer([layer.name for layer in model.layers][-2]).output
+        logits = Model(inputs=model.input, outputs=logits_out)
+        logits.output_width = output_width
+        logits.output_height = output_height
+        logits.n_classes = n_classes
+        logits.input_height = input_height
+        logits.input_width = input_width
+        logits.model_name = ""
 
-    #     logits.train = MethodType(train, logits)
-    #     logits.predict_segmentation = MethodType(predict, logits)
-    #     logits.predict_multiple = MethodType(predict_multiple, logits)
-    #     logits.evaluate_segmentation = MethodType(evaluate, logits)
+        logits.train = MethodType(train, logits)
+        logits.predict_segmentation = MethodType(predict, logits)
+        logits.predict_multiple = MethodType(predict_multiple, logits)
+        logits.evaluate_segmentation = MethodType(evaluate, logits)
 
-    #     return(model, logits)
+        return(model, logits)
 
     return model
 
