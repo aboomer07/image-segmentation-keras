@@ -104,7 +104,7 @@ def get_segmentation_model(input, output, add_crf=False):
     model.evaluate_segmentation = MethodType(evaluate, model)
 
     if add_crf:
-        logits_out = model.get_layer('reshape_1').output
+        logits_out = model.get_layer([layer.name for layer in model.layers][-2]).output
         logits = Model(inputs=model.input, outputs=logits_out)
         logits.output_width = output_width
         logits.output_height = output_height
