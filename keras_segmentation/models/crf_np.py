@@ -1,50 +1,31 @@
-from .densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
-from .densecrf_np.util import softmax
-from tensorflow.keras.layers import Layer
-import numpy as np
-import tensorflow as tf
+from densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
+from densecrf_np.util import softmax
 
-class CRFLayer(Layer):
-	def __init__(self, num_iterations=5):
-		super(CRFLayer, self).__init__()
+class DenseCRF(object):
 
-		print('Inside CRF Init')
-		print(tf.executing_eagerly())
-		self.alpha = 80
-		self.beta = 13
-		self.gamma = 3
-		self.spatial_ker_weight = 3
-		self.bilateral_ker_weight = 10
+    def __init__(self, image):
 
+        self.alpha = 80
+        self.beta = 13
+        self.gamma = 3
+		self.spatial_weight = 3
+        self.bilateral_weight = 10
 
-		self.iterations = num_iterations
+        self.sp = SpatialPairwise(image, gamma, gamma)
+        self.bp = BilateralPairwise(image, alpha, alpha, beta, beta, beta)
 
-	def call(self, inputs):
-		print('Inside CRF Call')
-		print(tf.executing_eagerly())
-		unaries = inputs[0][0, :, :]
-		unaries = unaries.numpy()
-		rgb = inputs[1][0, :, :]
-		rgb = rgb.numpy()
+    def infer(self, unary_logits, num_iterations=5):
+        q = softmax(unary_logits)
 
-		self.rgb = np.resize(rgb, unaries.shape)
+        for _ in range(num_iterations):
+            tmp1 = unary_logits
 
-		self.sp = SpatialPairwise(self.rgb, self.gamma, self.gamma)
-		self.bp = BilateralPairwise(self.rgb, self.alpha, self.alpha, 
-			self.beta, self.beta, self.beta)
+            output = self.sp.apply(q)
+            tmp1 = tmp1 + self.spatial_weight * output  # Do NOT use the += operator here!
 
-		q = softmax(unaries)
+            output = self.bp.apply(q)
+            tmp1 = tmp1 + self.bilateral_weight * output
 
-		for _ in range(self.iterations):
-			tmp1 = inputs
-			print('here')
-			output = self.sp.apply(q)
-			tmp1 = tmp1 + self.spatial_weight * output
+            q = softmax(tmp1)
 
-			output = self.bp.apply(q)
-			tmp1 = tmp1 + self.bilateral_weight * output
-
-			q = softmax(tmp1)
-
-		q = tf.convert_to_tensor(q)
-		return(q)
+        return q
