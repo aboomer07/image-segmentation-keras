@@ -274,7 +274,7 @@ def predict_video(model=None, inp=None, output=None,
 
 
 def evaluate(model=None, inp_images=None, annotations=None,
-             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1):
+             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False):
 
     if model is None:
         assert (checkpoints_path is not None),\
@@ -301,7 +301,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     n_pixels = np.zeros(model.n_classes)
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
-        pr = predict(model, inp, read_image_type=read_image_type)
+        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf)
         gt = get_segmentation_array(ann, model.n_classes,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
