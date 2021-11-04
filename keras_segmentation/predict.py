@@ -309,7 +309,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     tp = np.zeros(model.n_classes)
     fp = np.zeros(model.n_classes)
     fn = np.zeros(model.n_classes)
-    tn = np.zeros(model.n_classes)
+    # tn = np.zeros(model.n_classes)
     n_pixels = np.zeros(model.n_classes)
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
@@ -326,7 +326,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
             tp[cl_i] += np.sum((pr == cl_i) * (gt == cl_i))
             fp[cl_i] += np.sum((pr == cl_i) * ((gt != cl_i)))
             fn[cl_i] += np.sum((pr != cl_i) * ((gt == cl_i)))
-            tn[cl_i] += np.sum((pr != cl_i) * (gt != cl_i))
+            # tn[cl_i] += np.sum((pr != cl_i) * (gt != cl_i))
             n_pixels[cl_i] += np.sum(gt == cl_i)
 
     # cl_wise_score = tp / (tp + fp + fn + 0.000000000001)
@@ -335,7 +335,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     # mean_IU = np.mean(cl_wise_score)
     class_dice = (2 * tp) / ((2 * tp) + fp + fn + 0.000000000001)
     mean_dice = np.mean(class_dice)
-    class_acc = (tp + tn) / (tp + tn + fn + fp + 0.000000000001)
+    class_acc = tp / n_pixels
     mean_acc = np.mean(class_acc)
 
     out_dict = {
