@@ -347,8 +347,11 @@ def evaluate(model=None, inp_images=None, annotations=None,
 
     if class_labels is not None:
         metric_df = pd.DataFrame.from_dict(out_dict)
-        out_df = pd.concat([class_labels, metric_df], axis=0, ignore_index=True)
-        return(out_df)
+        class_labels['class_wise_dice'] = out_dict['class_wise_dice']
+        class_labels['mean_dice'] = out_dict['mean_dice']
+        class_labels['class_wise_acc'] = out_dict['class_wise_acc']
+        class_labels['mean_acc'] = out_dict['mean_acc']
+        return(class_labels)
 
     return(out_dict)
 
