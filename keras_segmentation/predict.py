@@ -14,6 +14,7 @@ from .data_utils.data_loader import get_image_array, get_segmentation_array,\
     DATA_LOADER_SEED, class_colors, get_pairs_from_paths
 from .models.config import IMAGE_ORDERING
 from densecrf_np.densecrf import DenseCRF
+from tensorflow.keras.models import Model
 
 
 random.seed(DATA_LOADER_SEED)
