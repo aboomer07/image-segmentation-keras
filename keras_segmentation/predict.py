@@ -333,7 +333,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     # n_pixels_norm = n_pixels / np.sum(n_pixels)
     # frequency_weighted_IU = np.sum(cl_wise_score*n_pixels_norm)
     # mean_IU = np.mean(cl_wise_score)
-    class_dice = (2 * tp) / (tp + fp + fn + 0.000000000001)
+    class_dice = (2 * tp) / ((2 * tp) + fp + fn + 0.000000000001)
     mean_dice = np.mean(class_dice)
     class_acc = (tp + tn) / (tp + tn + fn + fp + 0.000000000001)
     mean_acc = np.mean(class_acc)
