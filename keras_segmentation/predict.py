@@ -13,7 +13,7 @@ from .train import find_latest_checkpoint
 from .data_utils.data_loader import get_image_array, get_segmentation_array,\
     DATA_LOADER_SEED, class_colors, get_pairs_from_paths
 from .models.config import IMAGE_ORDERING
-from .models.crf_np import DenseCRF
+from densecrf_np.densecrf import DenseCRF
 
 
 random.seed(DATA_LOADER_SEED)

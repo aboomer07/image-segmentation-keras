@@ -1,5 +1,5 @@
-from .densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
-from .densecrf_np.util import softmax
+from densecrf_np.pairwise import SpatialPairwise, BilateralPairwise
+from densecrf_np.util import softmax
 
 class DenseCRF(object):
 
