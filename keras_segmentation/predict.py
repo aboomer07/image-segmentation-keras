@@ -325,9 +325,8 @@ def evaluate(model=None, inp_images=None, annotations=None,
             tp[cl_i] += np.sum((pr == cl_i) * (gt == cl_i))
             fp[cl_i] += np.sum((pr == cl_i) * ((gt != cl_i)))
             fn[cl_i] += np.sum((pr != cl_i) * ((gt == cl_i)))
+            tn[cl_i] += np.sum((pr != cl_i) * ((gt != cl_i)))
             n_pixels[cl_i] += np.sum(gt == cl_i)
-        for cl_i in range(model.n_classes):
-            tn[cl_i] = n_pixels[cl_i] - fn[cl_i] - fp[cl_i] - tp[cl_i]
 
     # cl_wise_score = tp / (tp + fp + fn + 0.000000000001)
     # n_pixels_norm = n_pixels / np.sum(n_pixels)
