@@ -326,8 +326,9 @@ def evaluate(model=None, inp_images=None, annotations=None,
             tp[cl_i] += np.sum((pr == cl_i) * (gt == cl_i))
             fp[cl_i] += np.sum((pr == cl_i) * ((gt != cl_i)))
             fn[cl_i] += np.sum((pr != cl_i) * ((gt == cl_i)))
-            tn[cl_i] += np.sum((pr != cl_i) * ((gt != cl_i)))
             n_pixels[cl_i] += np.sum(gt == cl_i)
+
+        tn = [n_pixels[i] - tp[i] - fp[i] - fn[i] for i in range(model.n_classes)]
 
     # cl_wise_score = tp / (tp + fp + fn + 0.000000000001)
     # n_pixels_norm = n_pixels / np.sum(n_pixels)
@@ -347,7 +348,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
 
     if class_labels is not None:
         metric_df = pd.DataFrame.from_dict(out_dict)
-        out_df = pd.concat([class_labels, metric_df], axis=0)
+        out_df = pd.concat([class_labels, metric_df], axis=0, ignore_index=True)
         return(out_df)
 
     return(out_dict)
