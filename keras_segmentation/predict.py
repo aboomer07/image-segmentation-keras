@@ -136,7 +136,7 @@ def predict(model=None, inp=None, out_fname=None,
             checkpoints_path=None, overlay_img=False,
             class_names=None, show_legends=False, colors=class_colors,
             prediction_width=None, prediction_height=None,
-            read_image_type=1, add_crf=False):
+            read_image_type=1, add_crf=False, crf_iterations=5):
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -172,7 +172,7 @@ def predict(model=None, inp=None, out_fname=None,
 
         pr = logits.predict(np.array([x]))[0]
         crf = DenseCRF(inp)
-        pr = crf.infer(pr)
+        pr = crf.infer(pr, num_iterations=crf_iterations)
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
     else:
         pr = model.predict(np.array([x]))[0]
@@ -346,11 +346,29 @@ def evaluate(model=None, inp_images=None, annotations=None,
     }
 
     if class_labels is not None:
+        c02_mean_dice = np.average(class_dice, weights=class_labels['CO2'])
+        c02_mean_acc = np.average(class_acc, weights=class_labels['CO2'])
+
+        bio_mean_dice = np.average(class_dice, weights=class_labels['biodiversity'])
+        bio_mean_acc = np.average(class_acc, weights=class_labels['biodiversity'])
+
+        solar_mean_dice = np.average(class_dice, weights=class_labels['usable_area'])
+        solar_mean_acc = np.average(class_acc, weights=class_labels['usable_area'])
+
         metric_df = pd.DataFrame.from_dict(out_dict)
         class_labels['class_wise_dice'] = out_dict['class_wise_dice']
         class_labels['mean_dice'] = out_dict['mean_dice']
         class_labels['class_wise_acc'] = out_dict['class_wise_acc']
         class_labels['mean_acc'] = out_dict['mean_acc']
+
+        class_labels['CO2_Dice'] = c02_mean_dice
+        class_labels['CO2_Acc'] = c02_mean_acc
+
+        class_labels['bio_Dice'] = bio_mean_dice
+        class_labels['bio_Acc'] = bio_mean_acc
+
+        class_labels['solar_Dice'] = solar_mean_dice
+        class_labels['solar_Acc'] = solar_mean_acc
         return(class_labels)
 
     return(out_dict)
