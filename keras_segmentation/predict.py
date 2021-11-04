@@ -159,7 +159,16 @@ def predict(model=None, inp=None, out_fname=None,
                         ordering=IMAGE_ORDERING)
 
     if add_crf:
-        pr = model.predict(np.array([x]))[0]
+        logits_out = model.get_layer([layer.name for layer in model.layers][-2]).output
+        logits = Model(inputs=model.input, outputs=logits_out)
+        logits.output_width = output_width
+        logits.output_height = output_height
+        logits.n_classes = n_classes
+        logits.input_height = input_height
+        logits.input_width = input_width
+        logits.model_name = ""
+
+        pr = logits.predict(np.array([x]))[0]
         crf = DenseCRF(inp)
         pr = crf.infer(pr)
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
