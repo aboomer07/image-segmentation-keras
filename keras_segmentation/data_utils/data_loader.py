@@ -250,7 +250,7 @@ def verify_segmentation_dataset(images_path, segs_path,
 def image_segmentation_generator(images_path, segs_path, batch_size,
                                  n_classes, input_height, input_width,
                                  output_height, output_width,
-                                 do_augment=False,
+                                 do_augment=False, reduce_map=None,
                                  augmentation_name="aug_all",
                                  custom_augmentation=None,
                                  other_inputs_paths=None, preprocessing=None,
@@ -282,7 +282,9 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                     # seg = imread(seg)
 
                 im = cv2.imread(im, read_image_type)
-                # im = imread(im)
+                if reduce_map is not None:
+                    for key, val in reduce_map.items():
+                        seg[np.all(seg == key, axis=-1)] = val
 
                 if do_augment:
 
@@ -308,8 +310,9 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
 
                 im = cv2.imread(im, read_image_type)
                 seg = cv2.imread(seg, 1)
-                # im = imread(im)
-                # seg = imread(seg)
+                if reduce_map is not None:
+                    for key, val in reduce_map.items():
+                        seg[np.all(seg == key, axis=-1)] = val
 
                 oth = []
                 for f in others:
