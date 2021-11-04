@@ -316,8 +316,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
         gt = get_segmentation_array(ann, model.n_classes,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
-        # gt = gt.argmax(-1)
-        gt = gt[:, :, 0]
+        gt = gt.argmax(-1)
         pr = pr.flatten()
         gt = gt.flatten()
 
