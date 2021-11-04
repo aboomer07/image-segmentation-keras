@@ -315,7 +315,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
         gt = get_segmentation_array(ann, model.n_classes,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
-        gt = gt.argmax(-1)
+        # gt = gt.argmax(-1)
         pr = pr.flatten()
         gt = gt.flatten()
 
@@ -330,11 +330,15 @@ def evaluate(model=None, inp_images=None, annotations=None,
     n_pixels_norm = n_pixels / np.sum(n_pixels)
     frequency_weighted_IU = np.sum(cl_wise_score*n_pixels_norm)
     mean_IU = np.mean(cl_wise_score)
+    class_dice = (2 * tp) / (tp + fp + fn + 0.000000000001)
+    mean_dice = np.mean(class_dice)
 
     return {
         "frequency_weighted_IU": frequency_weighted_IU,
         "mean_IU": mean_IU,
-        "class_wise_IU": cl_wise_score
+        "class_wise_IU": cl_wise_score,
+        'class_wise_dice' : class_dice,
+        'mean_dice' : mean_dice
     }
 
 
