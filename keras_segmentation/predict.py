@@ -285,7 +285,7 @@ def predict_video(model=None, inp=None, output=None,
 
 
 def evaluate(model=None, inp_images=None, annotations=None,
-             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None):
+             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5):
 
     if model is None:
         assert (checkpoints_path is not None),\
@@ -313,7 +313,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     n_pixels = np.zeros(model.n_classes)
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
-        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf)
+        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations)
         gt = get_segmentation_array(ann, model.n_classes,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
@@ -326,7 +326,6 @@ def evaluate(model=None, inp_images=None, annotations=None,
             tp[cl_i] += np.sum((pr == cl_i) * (gt == cl_i))
             fp[cl_i] += np.sum((pr == cl_i) * ((gt != cl_i)))
             fn[cl_i] += np.sum((pr != cl_i) * ((gt == cl_i)))
-            # tn[cl_i] += np.sum((pr != cl_i) * (gt != cl_i))
             n_pixels[cl_i] += np.sum(gt == cl_i)
 
     # cl_wise_score = tp / (tp + fp + fn + 0.000000000001)
@@ -334,9 +333,9 @@ def evaluate(model=None, inp_images=None, annotations=None,
     # frequency_weighted_IU = np.sum(cl_wise_score*n_pixels_norm)
     # mean_IU = np.mean(cl_wise_score)
     class_dice = (2 * tp) / ((2 * tp) + fp + fn + 0.000000000001)
-    mean_dice = np.mean(class_dice)
+    mean_dice = np.average(class_dice, weights=n_pixels)
     class_acc = tp / n_pixels
-    mean_acc = np.mean(class_acc)
+    mean_acc = np.average(class_acc, weights=n_pixels)
 
     out_dict = {
         'class_wise_dice' : class_dice,
