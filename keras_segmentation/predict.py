@@ -350,14 +350,15 @@ def evaluate(model=None, inp_images=None, annotations=None,
             class_labels = class_labels.reset_index()
             class_labels['index'] = class_labels['index'].map(reduce_map)
             class_labels = class_labels.groupby('index')[['labels', 'CO2', 'usable_area', 'biodiversity']].first()
-        c02_mean_dice = np.average(class_dice, weights=class_labels['CO2'])
-        c02_mean_acc = np.average(class_acc, weights=class_labels['CO2'])
 
-        bio_mean_dice = np.average(class_dice, weights=class_labels['biodiversity'])
-        bio_mean_acc = np.average(class_acc, weights=class_labels['biodiversity'])
+        c02_mean_dice = np.average(class_dice, weights=(class_labels['CO2']*n_pixels))
+        c02_mean_acc = np.average(class_acc, weights=(class_labels['CO2']*n_pixels))
 
-        solar_mean_dice = np.average(class_dice, weights=class_labels['usable_area'])
-        solar_mean_acc = np.average(class_acc, weights=class_labels['usable_area'])
+        bio_mean_dice = np.average(class_dice, weights=(class_labels['biodiversity']*n_pixels))
+        bio_mean_acc = np.average(class_acc, weights=(class_labels['biodiversity']*n_pixels))
+
+        solar_mean_dice = np.average(class_dice, weights=(class_labels['usable_area']*n_pixels))
+        solar_mean_acc = np.average(class_acc, weights=(class_labels['usable_area']*n_pixels))
 
         metric_df = pd.DataFrame.from_dict(out_dict)
         class_labels['class_wise_dice'] = out_dict['class_wise_dice']
