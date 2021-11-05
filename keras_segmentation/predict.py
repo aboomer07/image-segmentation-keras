@@ -346,6 +346,10 @@ def evaluate(model=None, inp_images=None, annotations=None,
     }
 
     if class_labels is not None:
+        if reduce_map is not None:
+            class_labels = class_labels.reset_index()
+            class_labels['index'] = class_labels['index'].map(reduce_map)
+            class_labels = class_labels.groupby('index')[['labels', 'CO2', 'usable_area', 'biodiversity']].first()
         c02_mean_dice = np.average(class_dice, weights=class_labels['CO2'])
         c02_mean_acc = np.average(class_acc, weights=class_labels['CO2'])
 
