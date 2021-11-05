@@ -306,10 +306,10 @@ def evaluate(model=None, inp_images=None, annotations=None,
     assert type(inp_images) is list
     assert type(annotations) is list
 
-    tp = np.ones(model.n_classes) * 0.000000000001
-    fp = np.ones(model.n_classes) * 0.000000000001
-    fn = np.ones(model.n_classes) * 0.000000000001
-    n_pixels = np.ones(model.n_classes) * 0.000000000001
+    tp = np.zeros(model.n_classes)
+    fp = np.zeros(model.n_classes)
+    fn = np.zeros(model.n_classes)
+    n_pixels = np.zeros(model.n_classes)
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
         pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations)
