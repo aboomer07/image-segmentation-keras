@@ -313,14 +313,14 @@ def evaluate(model=None, inp_images=None, annotations=None,
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
         pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations)
-        gt = get_segmentation_array(ann, model.n_classes,
+        gt = get_segmentation_array(ann, 18,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
         gt = gt.argmax(-1)
         pr = pr.flatten()
         gt = gt.flatten()
-        # if reduce_map is not None:
-        #     gt = np.array([reduce_map[x] for x in gt])
+        if reduce_map is not None:
+            gt = np.array([reduce_map[x] for x in gt])
 
         for cl_i in range(model.n_classes):
 
