@@ -319,8 +319,8 @@ def evaluate(model=None, inp_images=None, annotations=None,
         gt = gt.argmax(-1)
         pr = pr.flatten()
         gt = gt.flatten()
-        if reduce_map is not None:
-            gt = np.array([reduce_map[x] for x in gt])
+        # if reduce_map is not None:
+        #     gt = np.array([reduce_map[x] for x in gt])
 
         for cl_i in range(model.n_classes):
 
