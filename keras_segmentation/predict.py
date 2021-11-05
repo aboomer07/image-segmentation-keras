@@ -285,7 +285,7 @@ def predict_video(model=None, inp=None, output=None,
 
 
 def evaluate(model=None, inp_images=None, annotations=None,
-             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5):
+             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5, reduce_map=None):
 
     if model is None:
         assert (checkpoints_path is not None),\
@@ -309,7 +309,6 @@ def evaluate(model=None, inp_images=None, annotations=None,
     tp = np.zeros(model.n_classes)
     fp = np.zeros(model.n_classes)
     fn = np.zeros(model.n_classes)
-    # tn = np.zeros(model.n_classes)
     n_pixels = np.zeros(model.n_classes)
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
@@ -320,6 +319,8 @@ def evaluate(model=None, inp_images=None, annotations=None,
         gt = gt.argmax(-1)
         pr = pr.flatten()
         gt = gt.flatten()
+        if reduce_map is not None:
+            gt = np.array([reduce_map[x] for x in gt])
 
         for cl_i in range(model.n_classes):
 
