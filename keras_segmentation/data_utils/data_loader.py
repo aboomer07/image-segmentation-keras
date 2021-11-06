@@ -252,10 +252,14 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                                  output_height, output_width,
                                  do_augment=False, reduce_map=None,
                                  augmentation_name="aug_all",
-                                 custom_augmentation=None,
+                                 custom_augmentation=None, mlos=None,
                                  other_inputs_paths=None, preprocessing=None,
                                  read_image_type=cv2.IMREAD_COLOR , ignore_segs=False ):
     
+    
+    if mlos is not None:
+        mlos_df = mlos.copy()
+        mlos_df = mlos_df[mlos_df['Aug_ID'] != 'Original']
 
     if not ignore_segs:
         img_seg_pairs = get_pairs_from_paths(images_path, segs_path, other_inputs_paths=other_inputs_paths)
@@ -281,6 +285,7 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                     seg = cv2.imread(seg, 1)
                     # seg = imread(seg)
 
+                im_path = im
                 im = cv2.imread(im, read_image_type)
                 if reduce_map is not None:
                     for key, val in reduce_map.items():
@@ -294,8 +299,13 @@ def image_segmentation_generator(images_path, segs_path, batch_size,
                         im, seg[:, :, 0] = augment_seg(im, seg[:, :, 0],
                                                        augmentation_name)
                     else:
-                        im, seg[:, :, 0] = custom_augment_seg(im, seg[:, :, 0],
-                                                              custom_augmentation)
+                        if mlos is None:
+                            im, seg[:, :, 0] = custom_augment_seg(im, seg[:, :, 0], custom_augmentation)
+                        else:
+                            curr_augs = list(mlos_df[mlos_df['filename'] == im_path]['Aug_ID'].unique())
+                            curr_funcs = [custom_augmentation[x] for x in curr_augs]
+                            curr_augment = iaa.Sequential(curr_funcs)
+                            im, seg[:, :, 0] = custom_augment_seg(im, seg[:, :, 0], curr_augment)
 
                 if preprocessing is not None:
                     im = preprocessing(im)
