@@ -188,7 +188,7 @@ def predict(model=None, inp=None, out_fname=None,
     if out_fname is not None:
         cv2.imwrite(out_fname, seg_img)
 
-    return(pr)
+    return(seg_img)
 
 
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
