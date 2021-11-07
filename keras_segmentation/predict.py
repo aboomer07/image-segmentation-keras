@@ -171,7 +171,7 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
         logits.model_name = ""
 
         pr = logits.predict(np.array([x]))[0]
-        crf = DenseCRF(inp, crf_params=crf_params)
+        crf = DenseCRF(inp, params=crf_params)
         pr = crf.infer(pr, num_iterations=crf_iterations)
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
     else:
