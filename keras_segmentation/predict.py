@@ -185,10 +185,16 @@ def predict(model=None, inp=None, out_fname=None,
                                      prediction_width=prediction_width,
                                      prediction_height=prediction_height)
 
+    lab_img = np.zeros(seg_img.shape, dtype=np.uint8)
+    for i, rgb in enumerate(colors.values()):
+        lab_img[np.all(seg_img == rgb, axis=-1)] = i
+
+    lab_img = lab_img[:, :, 0]
+
     if out_fname is not None:
         cv2.imwrite(out_fname, seg_img)
 
-    return(pr)
+    return(lab_img)
 
 
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
