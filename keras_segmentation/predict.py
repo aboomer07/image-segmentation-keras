@@ -136,7 +136,7 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
             checkpoints_path=None, overlay_img=False,
             class_names=None, show_legends=False, read_image_type=1,
             prediction_width=None, prediction_height=None,
-            add_crf=False, crf_iterations=5, crf_params=None):
+            add_crf=False, crf_iterations=5, crf_params=None, full_img=False):
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -185,16 +185,18 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
                                      prediction_width=prediction_width,
                                      prediction_height=prediction_height)
 
-    lab_img = np.zeros(seg_img.shape, dtype=np.uint8)
-    for i, rgb in enumerate(colors.values()):
-        lab_img[np.all(seg_img == rgb, axis=-1)] = i
+    if full_img:
+        lab_img = np.zeros(seg_img.shape, dtype=np.uint8)
+        for i, rgb in enumerate(colors.values()):
+            lab_img[np.all(seg_img == rgb, axis=-1)] = i
 
-    lab_img = lab_img[:, :, 0]
+        lab_img = lab_img[:, :, 0]
+        return(lab_img)
 
     if out_fname is not None:
         cv2.imwrite(out_fname, seg_img)
 
-    return(lab_img)
+    return(pr)
 
 
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
