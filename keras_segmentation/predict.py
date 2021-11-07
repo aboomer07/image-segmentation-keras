@@ -320,7 +320,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     tp = np.zeros(model.n_classes)
     fp = np.zeros(model.n_classes)
     fn = np.zeros(model.n_classes)
-    n_pixels = np.zeros(model.n_classes)
+    n_pixels = np.ones(model.n_classes) * 0.000000000001
 
     if init_crf:
         crf_obj = DenseCRF(inp_images[0], params=crf_params)
@@ -352,6 +352,8 @@ def evaluate(model=None, inp_images=None, annotations=None,
     # mean_IU = np.mean(cl_wise_score)
     class_dice = (2 * tp) / ((2 * tp) + fp + fn + 0.000000000001)
     mean_dice = np.average(class_dice, weights=n_pixels)
+    if len(inp_images) == 1:
+        return(mean_dice)
     class_acc = tp / n_pixels
     mean_acc = np.average(class_acc, weights=n_pixels)
 
