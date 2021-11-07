@@ -136,7 +136,8 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
             checkpoints_path=None, overlay_img=False,
             class_names=None, show_legends=False, read_image_type=1,
             prediction_width=None, prediction_height=None,
-            add_crf=False, crf_iterations=5, crf_params=None, full_img=False):
+            add_crf=False, crf_iterations=5, crf_params=None, full_img=False,
+            crf_obj=None):
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -171,8 +172,9 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
         logits.model_name = ""
 
         pr = logits.predict(np.array([x]))[0]
-        crf = DenseCRF(inp, params=crf_params)
-        pr = crf.infer(pr, num_iterations=crf_iterations)
+        if crf_obj is None:
+            crf_obj = DenseCRF(inp, params=crf_params)
+        pr = crf_obj.infer(pr, num_iterations=crf_iterations)
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
     else:
         pr = model.predict(np.array([x]))[0]
@@ -293,7 +295,8 @@ def predict_video(model=None, inp=None, output=None,
 
 
 def evaluate(model=None, inp_images=None, annotations=None,
-             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5, reduce_map=None, crf_params=None):
+             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5, reduce_map=None, crf_params=None,
+             init_crf=False):
 
     if model is None:
         assert (checkpoints_path is not None),\
@@ -319,8 +322,14 @@ def evaluate(model=None, inp_images=None, annotations=None,
     fn = np.zeros(model.n_classes)
     n_pixels = np.zeros(model.n_classes)
 
+    if init_crf:
+        crf_obj = DenseCRF(inp_images[0], params=crf_params)
+    else:
+        crf_obj = None
+
     for inp, ann in tqdm(zip(inp_images, annotations)):
-        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations, crf_params=crf_params)
+        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations, crf_params=crf_params,
+            crf_obj=crf_obj)
         gt = get_segmentation_array(ann, 18,
                                     model.output_width, model.output_height,
                                     no_reshape=True, read_image_type=read_image_type)
