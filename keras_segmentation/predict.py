@@ -137,7 +137,11 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
             class_names=None, show_legends=False, read_image_type=1,
             prediction_width=None, prediction_height=None,
             add_crf=False, crf_iterations=5, crf_params=None, full_img=False,
-            crf_obj=None):
+            crf_obj=None, ensemble=False):
+    
+    if ensemble:
+        models = model
+        model = models[0]
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -177,7 +181,15 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
         pr = crf_obj.infer(pr, num_iterations=crf_iterations)
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
     else:
-        pr = model.predict(np.array([x]))[0]
+        if ensemble:
+            preds = []
+            for mod in models:
+                preds.append(mod.predict(np.array([x]))[0])
+            preds = np.array(preds)
+            pr = preds.mean(axis=0)
+        else:
+            pr = model.predict(np.array([x]))[0]
+        
         pr = pr.reshape((output_height, output_width, n_classes)).argmax(axis=2)
 
     seg_img = visualize_segmentation(pr, inp, n_classes=n_classes,
