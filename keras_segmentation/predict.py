@@ -343,6 +343,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
                 preds.append(mod.predict(np.array([x]))[0])
             preds = np.array(preds)
             pr = preds.mean(axis=0)
+            pr = pr.reshape((model.output_height, model.output_width, model.n_classes)).argmax(axis=2)
         else:
             pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations, crf_params=crf_params,
             crf_obj=crf_obj)
