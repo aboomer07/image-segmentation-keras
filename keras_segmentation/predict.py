@@ -293,9 +293,10 @@ def predict_video(model=None, inp=None, output=None,
         video.release()
     cv2.destroyAllWindows()
 
-
 def evaluate(model=None, inp_images=None, annotations=None,
-             inp_images_dir=None, annotations_dir=None, checkpoints_path=None, read_image_type=1, add_crf=False, class_labels=None, crf_iterations=5, reduce_map=None, crf_params=None,
+             inp_images_dir=None, annotations_dir=None, checkpoints_path=None,
+             read_image_type=1, add_crf=False, class_labels=None, 
+             ensemble=False, crf_iterations=5, reduce_map=None, crf_params=None,
              init_crf=False):
 
     if model is None:
@@ -320,7 +321,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
     tp = np.zeros(model.n_classes)
     fp = np.zeros(model.n_classes)
     fn = np.zeros(model.n_classes)
-    n_pixels = np.ones(model.n_classes) * 0.000000000001
+    n_pixels = np.zeros(model.n_classes)
 
     if init_crf:
         crf_obj = DenseCRF(inp_images[0], params=crf_params)
@@ -328,7 +329,18 @@ def evaluate(model=None, inp_images=None, annotations=None,
         crf_obj = None
 
     for inp, ann in tqdm(zip(inp_images, annotations)):
-        pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations, crf_params=crf_params,
+        if ensemble:
+            input_width = model.input_width
+            input_height = model.input_height
+            x = get_image_array(inp, input_width, input_height,
+                        ordering=IMAGE_ORDERING)
+            preds = []
+            for mod in model:
+                preds.append(mod.predict(np.array([x]))[0])
+            preds = np.array(preds)
+            pr = preds.mean(axis=0)
+        else:
+            pr = predict(model, inp, read_image_type=read_image_type, add_crf=add_crf, crf_iterations=crf_iterations, crf_params=crf_params,
             crf_obj=crf_obj)
         gt = get_segmentation_array(ann, 18,
                                     model.output_width, model.output_height,
@@ -396,8 +408,6 @@ def evaluate(model=None, inp_images=None, annotations=None,
         return(class_labels)
 
     return(out_dict)
-
-
 
 
 
