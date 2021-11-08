@@ -298,6 +298,10 @@ def evaluate(model=None, inp_images=None, annotations=None,
              read_image_type=1, add_crf=False, class_labels=None, 
              ensemble=False, crf_iterations=5, reduce_map=None, crf_params=None,
              init_crf=False):
+    
+    if ensemble:
+        models = model
+        model = models[0]
 
     if model is None:
         assert (checkpoints_path is not None),\
@@ -335,7 +339,7 @@ def evaluate(model=None, inp_images=None, annotations=None,
             x = get_image_array(inp, input_width, input_height,
                         ordering=IMAGE_ORDERING)
             preds = []
-            for mod in model:
+            for mod in models:
                 preds.append(mod.predict(np.array([x]))[0])
             preds = np.array(preds)
             pr = preds.mean(axis=0)
