@@ -216,7 +216,8 @@ def predict(model=None, inp=None, out_fname=None, colors=class_colors,
 def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
                      checkpoints_path=None, overlay_img=False,
                      class_names=None, show_legends=False, colors=class_colors,
-                     prediction_width=None, prediction_height=None, read_image_type=1):
+                     prediction_width=None, prediction_height=None, 
+                     ensemble=False, read_image_type=1, full_img=False):
 
     if model is None and (checkpoints_path is not None):
         model = model_from_checkpoint_path(checkpoints_path)
@@ -245,11 +246,12 @@ def predict_multiple(model=None, inps=None, inp_dir=None, out_dir=None,
             else:
                 out_fname = os.path.join(out_dir, str(i) + ".jpg")
 
-        pr = predict(model, inp, out_fname,
-                     overlay_img=overlay_img, class_names=class_names,
-                     show_legends=show_legends, colors=colors,
-                     prediction_width=prediction_width,
-                     prediction_height=prediction_height, read_image_type=read_image_type)
+        pr = predict(model, inp, out_fname, ensemble=ensemble, 
+            full_img=full_img, overlay_img=overlay_img, class_names=class_names,
+            show_legends=show_legends, colors=colors, 
+            prediction_width=prediction_width, 
+            prediction_height=prediction_height, 
+            read_image_type=read_image_type)
 
         all_prs.append(pr)
 
