@@ -80,7 +80,7 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
 
     if conv_l1:
-      o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(0.0001)))(o)
+      o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(1e-5)))(o)
     else:
       o = (Conv2D(512, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
 
@@ -91,7 +91,7 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
 
     if conv_l1:
-      o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(0.0001)))(o)
+      o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(1e-5)))(o)
     else:
       o = (Conv2D(256, (3, 3), padding='valid', activation='relu' , data_format=IMAGE_ORDERING))(o)
 
@@ -102,7 +102,7 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
 
     if conv_l1:
-      o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(0.0001)))(o)
+      o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(1e-5)))(o)
     else:
       o = (Conv2D(128, (3, 3), padding='valid' , activation='relu' , data_format=IMAGE_ORDERING))(o)
 
@@ -116,14 +116,14 @@ def _unet(n_classes, encoder, l1_skip_conn=True, input_height=416,
     o = (ZeroPadding2D((1, 1), data_format=IMAGE_ORDERING))(o)
 
     if conv_l1:
-      o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats", kernel_regularizer=regularizers.l1(0.0001)))(o)
+      o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats", kernel_regularizer=regularizers.l1(1e-5)))(o)
     else:
       o = (Conv2D(64, (3, 3), padding='valid', activation='relu', data_format=IMAGE_ORDERING, name="seg_feats"))(o)
     o = (BatchNormalization())(o)
 
     if conv_l1:
       o = Conv2D(n_classes, (3, 3), padding='same',
-               data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(0.0001))(o)
+               data_format=IMAGE_ORDERING, kernel_regularizer=regularizers.l1(1e-5))(o)
     else:
       o = Conv2D(n_classes, (3, 3), padding='same',
                data_format=IMAGE_ORDERING)(o)
