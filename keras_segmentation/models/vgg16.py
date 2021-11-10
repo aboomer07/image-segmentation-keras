@@ -15,7 +15,7 @@ elif IMAGE_ORDERING == 'channels_last':
                      "vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
 
 
-def get_vgg_encoder(input_height=224,  input_width=224, pretrained='imagenet', channels=3):
+def get_vgg_encoder(input_height=224,  input_width=224, pretrained='imagenet', channels=3, conv_l1=False):
 
     assert input_height % 32 == 0
     assert input_width % 32 == 0
