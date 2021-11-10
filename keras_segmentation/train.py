@@ -127,6 +127,8 @@ def train(model,
 
         if (optimizer_name == 'adam')&(lr is not None):
           optimizer_name = tf.keras.optimizers.Adam(learning_rate=lr)
+        elif (optimizer_name == 'SGD')&(lr is not None):
+          optimizer_name = tf.keras.optimizers.SGD(learning_rate=lr)
 
         model.compile(loss=loss_k,
                       optimizer=optimizer_name,
